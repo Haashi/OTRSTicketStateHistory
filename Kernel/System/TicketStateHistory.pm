@@ -1,17 +1,19 @@
 package Kernel::System::TicketStateHistory;
 
+use Kernel::Config;
+use Kernel::System::Encode;
+use Kernel::System::Log;
+use Kernel::System::Main;
+use Kernel::System::DB;
+
 use strict;
 use warnings;
-
-our @ObjectDependencies = (
-  'Kernel::System::DB',
-);
 
 sub new {
     my ( $Type, %Param ) = @_;
 
     # allocate new hash for object
-    my $Self = {%Param};
+    my $Self = {};
     bless ($Self, $Type);
 
     return $Self;
@@ -21,16 +23,29 @@ sub GetTicketStateHistoryText {
 
     my ( $Self, $Param ) = @_;
 
-    use Kernel::System::ObjectManager;
-    local $Kernel::OM = Kernel::System::ObjectManager->new();
-    my $DBObject = $Kernel::OM->Get('Kernel::System::DB');
+    my $ConfigObject = Kernel::Config->new();
+    my $EncodeObject = Kernel::System::Encode->new(
+        ConfigObject => $ConfigObject,
+    );
+    my $LogObject = Kernel::System::Log->new(
+        ConfigObject => $ConfigObject,
+        EncodeObject => $EncodeObject,
+    );
+    my $MainObject = Kernel::System::Main->new(
+        ConfigObject => $ConfigObject,
+        EncodeObject => $EncodeObject,
+        LogObject    => $LogObject,
+    );
+    my $DBObject = Kernel::System::DB->new(
+        ConfigObject => $ConfigObject,
+        EncodeObject => $EncodeObject,
+        LogObject    => $LogObject,
+        MainObject   => $MainObject,
+    );
+
     $DBObject->Connect();
 
-
-
-
     my $ticketid=$Param;
-
 
     my $day;
     my $minute;
@@ -68,13 +83,13 @@ sub GetTicketStateHistoryText {
            LEFT JOIN ticket_state ts
                   ON ts.id = th.state_id
     WHERE  th.history_type_id IN ( '1', '27' ) and ticket_id=".$ticketid."
-    ORDER  BY createtime desc;";
+    ORDER  BY custom_date desc;";
 
     $DBObject->Prepare(SQL   => $requete,);
 
     my %Time=();
     my @row;
-    while(@row = $DBObject->FetchrowArray()){
+    while(@row=$DBObject->FetchrowArray()){
       my ($agent,$state,$notused,$startdate,$id,$enddate,$diff)=@row;
       if(defined $Time{$state}){
         $Time{$state}+=$diff;
@@ -108,7 +123,8 @@ sub GetTicketStateHistoryText {
       }
     }
 
-  $DBObject->Disconnect();
-  return $Text;
+    $DBObject->Disconnect();
+    return $Text;
 }
+
 1;
