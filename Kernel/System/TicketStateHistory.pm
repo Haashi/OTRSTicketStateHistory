@@ -91,7 +91,7 @@ sub GetTicketStateHistoryText {
       elsif( $Time{$_}<3600){
         $minute=int( $Time{$_}/60);
         $second= $Time{$_}%60;
-        $Text="The ticket stayed in the $_ state for $minute min and $second seconds.\n".$Text;
+        $Text="The ticket stayed in the $_ state for $minute min and $second sec.\n".$Text;
       }
       elsif( $Time{$_}<3600*24){
         $hour=int( $Time{$_}/3600);
