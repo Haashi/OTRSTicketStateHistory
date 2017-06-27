@@ -7,11 +7,11 @@
       <SubGroup>Frontend::Agent::Ticket::MenuModule</SubGroup>
       <Setting>
         <Hash>
-          <Item Key="Module">Kernel::Output::HTML::TicketMenu::Generic</Item>
+          <Item Key="Module">Kernel::Output::HTML::TicketMenuGeneric</Item>
           <Item Key="Name">TicketStateHistory</Item>
           <Item Translatable="0" Key="Description">Show the state history of the ticket.</Item>
           <Item Key="Action">AgentTicketStateHistory</Item>
-          <Item Key="Link">Action=AgentTicketStateHistory;TicketID=[% Data.TicketID | html %]</Item>
+          <Item Key="Link">Action=AgentTicketStateHistory;TicketID=$QData{"TicketID"}</Item>
           <Item Key="Target"/>
           <Item Key="PopupType"/>
         </Hash>
@@ -24,11 +24,11 @@
       <SubGroup>Frontend::Agent::Ticket::MenuModulePre</SubGroup>
       <Setting>
         <Hash>
-          <Item Key="Module">Kernel::Output::HTML::TicketMenu::Generic</Item>
+          <Item Key="Module">Kernel::Output::HTML::TicketMenuGeneric</Item>
           <Item Key="Name">TicketStateHistory</Item>
           <Item Key="Action">AgentTicketStateHistory</Item>
           <Item Translatable="0" Key="Description">Show the state history of the ticket.</Item>
-          <Item Key="Link">Action=AgentTicketStateHistory;TicketID=[% Data.TicketID | html %]</Item>
+          <Item Key="Link">Action=AgentTicketStateHistory;TicketID=$QData{"TicketID"}</Item>
           <Item Key="Target"/>
           <Item Key="PopupType"/>
         </Hash>
