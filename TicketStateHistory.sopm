@@ -14,7 +14,7 @@
         <File Permission="644" Location="Kernel/Config/Files/TicketStateHistory.xml"></File>
         <File Permission="644" Location="Kernel/System/TicketStateHistory.pm"></File>
         <File Permission="644" Location="Kernel/Modules/AgentTicketStateHistory.pm"></File>
-        <File Permission="644" Location="Kernel/Output/HTML/Templates/Standard/AgentTicketStateHistory.dtl"></File>
-        <File Permission="644" Location="Kernel/Output/HTML/Templates/Standard/AgentTicketStateHistory2.dtl"></File>
+        <File Permission="644" Location="Kernel/Output/HTML/Templates/AgentTicketStateHistory.dtl"></File>
+        <File Permission="644" Location="Kernel/Output/HTML/Templates/AgentTicketStateHistory2.dtl"></File>
     </Filelist>
 </otrs_package>
