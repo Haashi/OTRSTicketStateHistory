@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<otrs_package version="1.0">
+    <Name>TicketStateHistory</Name>
+    <Version>0.1</Version>
+    <Framework>5.x</Framework>
+    <Vendor>fcnet</Vendor>
+    <URL>http://www.fcnet.fr/</URL>
+    <License>GNU AFFERO GENERAL PUBLIC LICENSE Version 3, November 2007</License>
+    <Description Lang="fr">Historique de l'état d'un ticket dans le menu agent.</Description>
+    <Description Lang="en">State history of a ticket in agent menu.</Description>
+    <BuildDate>?</BuildDate>
+    <BuildHost>?</BuildHost>
+    <Filelist>
+        <File Permission="644" Location="Kernel/Config/Files/TicketStateHistory.xml"></File>
+        <File Permission="644" Location="Kernel/System/TicketStateHistory.pm"></File>
+        <File Permission="644" Location="Kernel/Modules/AgentTicketStateHistory.pm"></File>
+        <File Permission="644" Location="Kernel/Output/HTML/Templates/Standard/AgentTicketStateHistory.tt"></File>
+        <File Permission="644" Location="Kernel/Output/HTML/Templates/Standard/AgentTicketStateHistory2.tt"></File>
+    </Filelist>
+</otrs_package>
