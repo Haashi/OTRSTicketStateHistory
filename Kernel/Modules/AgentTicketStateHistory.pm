@@ -1,143 +1,179 @@
-# -- Copyright (C) 2001-2017 OTRS AG, http://otrs.com/ -- This software comes with ABSOLUTELY NO WARRANTY. For details, see the
-# enclosed file COPYING for license information (AGPL). If you did not receive this file, see http://www.gnu.org/licenses/agpl.txt. --
-package Kernel::Modules::AgentTicketStateHistory;
-use strict; use warnings;
-use Kernel::System::VariableCheck qw(:all);
-use Kernel::Language qw(Translatable);
+# --
+# Kernel/Modules/AgentTicketHistory.pm - ticket history
+# Copyright (C) 2001-2013 OTRS AG, http://otrs.com/
+# --
+# This software comes with ABSOLUTELY NO WARRANTY. For details, see
+# the enclosed file COPYING for license information (AGPL). If you
+# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# --
 
-our $ObjectManagerDisabled = 1;
+package Kernel::Modules::AgentTicketStateHistory;
+
+use strict;
+use warnings;
+use Kernel::System::VariableCheck qw(:all);
+use Kernel::System::TicketStateHistory;
 
 sub new {
     my ( $Type, %Param ) = @_;
+
     # allocate new hash for object
     my $Self = {%Param};
     bless( $Self, $Type );
+
+    # check needed objects
+    for my $Needed (qw(DBObject TicketObject LayoutObject LogObject UserObject ConfigObject)) {
+        if ( !$Self->{$Needed} ) {
+            $Self->{LayoutObject}->FatalError( Message => "Got no $Needed!" );
+        }
+    }
+    $Self->{TicketStateHistoryObject} = Kernel::System::TicketStateHistory->new();
+
     return $Self;
 }
 
 sub Run {
     my ( $Self, %Param ) = @_;
-    # get needed object
-    my $LayoutObject = $Kernel::OM->Get('Kernel::Output::HTML::Layout');
+
     # check needed stuff
     if ( !$Self->{TicketID} ) {
+
         # error page
-        return $LayoutObject->ErrorScreen(
-            Message => Translatable('Can\'t show history, no TicketID is given!'),
-            Comment => Translatable('Please contact the administrator.'),
+        return $Self->{LayoutObject}->ErrorScreen(
+            Message => 'Can\'t show history, no TicketID is given!',
+            Comment => 'Please contact the admin.',
         );
     }
-    # get ticket object
-    my $TicketObject = $Kernel::OM->Get('Kernel::System::Ticket');
+
     # check permissions
     if (
-        !$TicketObject->TicketPermission(
-            Type => 'ro',
+        !$Self->{TicketObject}->TicketPermission(
+            Type     => 'ro',
             TicketID => $Self->{TicketID},
-            UserID => $Self->{UserID},
+            UserID   => $Self->{UserID},
         )
         )
     {
+
         # error screen, don't show ticket
-        return $LayoutObject->NoPermission( WithHeader => 'yes' );
+        return $Self->{LayoutObject}->NoPermission( WithHeader => 'yes' );
     }
+
     # get ACL restrictions
-    my %PossibleActions = ( 1 => $Self->{Action} );
-    my $ACL = $TicketObject->TicketAcl(
-        Data => \%PossibleActions,
-        Action => $Self->{Action},
-        TicketID => $Self->{TicketID},
-        ReturnType => 'Action',
+    $Self->{TicketObject}->TicketAcl(
+        Data          => '-',
+        TicketID      => $Self->{TicketID},
+        ReturnType    => 'Action',
         ReturnSubType => '-',
-        UserID => $Self->{UserID},
+        UserID        => $Self->{UserID},
     );
-    my %AclAction = $TicketObject->TicketAclActionData();
-    # check if ACL restrictions exist
-    if ( $ACL || IsHashRefWithData( \%AclAction ) ) {
-        my %AclActionLookup = reverse %AclAction;
+    my %AclAction = $Self->{TicketObject}->TicketAclActionData();
+
+    # check if ACL resctictions if exist
+    if ( IsHashRefWithData( \%AclAction ) ) {
+
         # show error screen if ACL prohibits this action
-        if ( !$AclActionLookup{ $Self->{Action} } ) {
-            return $LayoutObject->NoPermission( WithHeader => 'yes' );
+        if ( defined $AclAction{ $Self->{Action} } && $AclAction{ $Self->{Action} } eq '0' ) {
+            return $Self->{LayoutObject}->NoPermission( WithHeader => 'yes' );
         }
     }
-    my %Ticket = $TicketObject->TicketGet( TicketID => $Self->{TicketID} );
-    my @Lines = $TicketObject->HistoryGet(
+
+    my %Ticket = $Self->{TicketObject}->TicketGet( TicketID => $Self->{TicketID} );
+
+    my @Lines = $Self->{TicketObject}->HistoryGet(
         TicketID => $Self->{TicketID},
-        UserID => $Self->{UserID},
+        UserID   => $Self->{UserID},
     );
-    my $Tn = $TicketObject->TicketNumberLookup( TicketID => $Self->{TicketID} );
+    my $Tn = $Self->{TicketObject}->TicketNumberLookup( TicketID => $Self->{TicketID} );
+
     # get shown user info
-    if ( $Kernel::OM->Get('Kernel::Config')->Get('Ticket::Frontend::HistoryOrder') eq 'reverse' ) {
-        @Lines = reverse(@Lines);
+    my @NewLines = ();
+    if ( $Self->{ConfigObject}->Get('Ticket::Frontend::HistoryOrder') eq 'reverse' ) {
+        @NewLines = reverse(@Lines);
     }
-    # Get mapping of history types to readable strings
-    my %HistoryTypes;
-    my %HistoryTypeConfig = %{ $Kernel::OM->Get('Kernel::Config')->Get('Ticket::Frontend::HistoryTypes') // {} };
-    for my $Entry ( sort keys %HistoryTypeConfig ) {
-        %HistoryTypes = (
-            %HistoryTypes,
-            %{ $HistoryTypeConfig{$Entry} },
-        );
+    else {
+        @NewLines = @Lines;
     }
+    @NewLines= grep{ $_->{HistoryType} eq 'StateUpdate' || $_->{HistoryType} eq 'NewTicket';} @NewLines;
+    my $Table   = '';
+    my $Counter = 1;
+    for my $DataTmp (@NewLines) {
+        $Counter++;
+        my %Data = %{$DataTmp};
 
-    @Lines= grep{ $_->{HistoryType} eq 'StateUpdate' || $_->{HistoryType} eq 'NewTicket';} @Lines;
-
-    for my $Data (@Lines) {
-	# replace text
-        if ( $Data->{Name} && $Data->{Name} =~ m/^%%/x ) {
-            $Data->{Name} =~ s/^%%//xg;
-            my @Values = split( /%%/x, $Data->{Name} );
-            $Data->{Name} = $LayoutObject->{LanguageObject}->Translate(
-                $HistoryTypes{ $Data->{HistoryType} },
-                @Values,
+        # replace text
+        if ( $Data{Name} && $Data{Name} =~ m/^%%/x ) {
+            my %Info = ();
+            $Data{Name} =~ s/^%%//xg;
+            my @Values = split( /%%/x, $Data{Name} );
+            $Data{Name} = '';
+            for my $Value (@Values) {
+                if ( $Data{Name} ) {
+                    $Data{Name} .= "\", ";
+                }
+                $Data{Name} .= "\"$Value";
+            }
+            if ( !$Data{Name} ) {
+                $Data{Name} = '" ';
+            }
+            $Data{Name} = $Self->{LayoutObject}->{LanguageObject}->Get(
+                'History::' . $Data{HistoryType} . '", ' . $Data{Name}
             );
+
             # remove not needed place holder
-            $Data->{Name} =~ s/\%s//xg;
+            $Data{Name} =~ s/\%s//xg;
         }
-        $LayoutObject->Block(
+
+        $Self->{LayoutObject}->Block(
             Name => 'Row',
-            Data => $Data,
+            Data => {%Data},
         );
-        if ( $Data->{ArticleID} ne "0" ) {
-            $LayoutObject->Block(
+
+        if ( $Data{ArticleID} ne "0" ) {
+            $Self->{LayoutObject}->Block(
                 Name => 'ShowLinkZoom',
-                Data => $Data,
+                Data => {%Data},
             );
         }
         else {
-            $LayoutObject->Block(
+            $Self->{LayoutObject}->Block(
                 Name => 'NoLinkZoom',
             );
+
         }
     }
-    #get TicketStateHistory object
-    my $TicketStateHistoryObject = $Kernel::OM->Get('Kernel::System::TicketStateHistory');
-    my %Data=();
-    $Data{TicketStateHistoryText} = $TicketStateHistoryObject->GetTicketStateHistoryText($Self->{TicketID});
+
+    my %Data = ();
+
+    $Data{TicketStateHistoryText} = $Self->{TicketStateHistoryObject}->GetTicketStateHistoryText($Self->{TicketID});
 
     # build page
-    my $Output = $LayoutObject->Header(
+    my $Output = $Self->{LayoutObject}->Header(
         Value => $Tn,
-        Type => 'Small',
+        Type  => 'Small',
     );
-    $Output .= $LayoutObject->Output(
+    $Output .= $Self->{LayoutObject}->Output(
         TemplateFile => 'AgentTicketStateHistory',
-        Data => {
+        Data         => {
             TicketNumber => $Tn,
-            TicketID => $Self->{TicketID},
-            Title => $Ticket{Title},
+            TicketID     => $Self->{TicketID},
+            Title        => $Ticket{Title},
         },
     );
 
     foreach (reverse split(/\n/,$Data{TicketStateHistoryText})) {
       $Data{TicketStateHistoryLine}=$_;
-      $Output.= $LayoutObject->Output(
+      $Output.= $Self->{LayoutObject}->Output(
         Data=> \%Data,
         TemplateFile => 'AgentTicketStateHistory2',
       );
     }
 
-    $Output .= $LayoutObject->Footer();
+
+    $Output .= $Self->{LayoutObject}->Footer(
+    );
+
     return $Output;
 }
+
 1;
