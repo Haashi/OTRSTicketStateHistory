@@ -2,7 +2,7 @@
 <otrs_package version="1.0">
     <Name>TicketStateHistory</Name>
     <Version>0.1</Version>
-    <Framework>5.x</Framework>
+    <Framework>3.2.x</Framework>
     <Vendor>fcnet</Vendor>
     <URL>http://www.fcnet.fr/</URL>
     <License>GNU AFFERO GENERAL PUBLIC LICENSE Version 3, November 2007</License>
@@ -14,7 +14,7 @@
         <File Permission="644" Location="Kernel/Config/Files/TicketStateHistory.xml"></File>
         <File Permission="644" Location="Kernel/System/TicketStateHistory.pm"></File>
         <File Permission="644" Location="Kernel/Modules/AgentTicketStateHistory.pm"></File>
-        <File Permission="644" Location="Kernel/Output/HTML/Templates/Standard/AgentTicketStateHistory.tt"></File>
-        <File Permission="644" Location="Kernel/Output/HTML/Templates/Standard/AgentTicketStateHistory2.tt"></File>
+        <File Permission="644" Location="Kernel/Output/HTML/Templates/Standard/AgentTicketStateHistory.dtl"></File>
+        <File Permission="644" Location="Kernel/Output/HTML/Templates/Standard/AgentTicketStateHistory2.dtl"></File>
     </Filelist>
 </otrs_package>
