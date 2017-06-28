@@ -66,7 +66,7 @@ sub GetTicketStateHistoryText {
 
     $DBObject->Prepare(SQL   => $requete,);
     
-    #account the total time spent in each unique state
+    #accounts the total time spent in each unique state
     my %Time=();
     my $day;
     my $minute;
