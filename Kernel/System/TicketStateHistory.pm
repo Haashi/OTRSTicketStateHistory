@@ -1,3 +1,5 @@
+# Copyright (C) 2017 Haashii
+
 package Kernel::System::TicketStateHistory;
 
 use Kernel::Config;
@@ -47,12 +49,7 @@ sub GetTicketStateHistoryText {
 
     my $ticketid=$Param;
 
-    my $day;
-    my $minute;
-    my $hour;
-    my $second;
-
-
+    #Credits to Crythias for the query
     my $requete="SELECT u.login                                                             owner,
            ts.name                                                             state,
            th.name                                                             fromto
@@ -86,10 +83,14 @@ sub GetTicketStateHistoryText {
     ORDER  BY custom_date desc;";
 
     $DBObject->Prepare(SQL   => $requete,);
-
+    
+    #accounts the total time spent in each unique state
     my %Time=();
-    my @row;
-    while(@row=$DBObject->FetchrowArray()){
+    my $day;
+    my $minute;
+    my $hour;
+    my $second;
+    while(my @row=$DBObject->FetchrowArray()){
       my ($agent,$state,$notused,$startdate,$id,$enddate,$diff)=@row;
       if(defined $Time{$state}){
         $Time{$state}+=$diff;
@@ -98,6 +99,10 @@ sub GetTicketStateHistoryText {
         $Time{$state}=$diff;
       }
     }
+    
+    $DBObject->Disconnect();
+    
+    #Builds the text output
     my $Text="";
     foreach (keys %Time) {
       if( $Time{$_}<60){
@@ -123,7 +128,6 @@ sub GetTicketStateHistoryText {
       }
     }
 
-    $DBObject->Disconnect();
     return $Text;
 }
 
