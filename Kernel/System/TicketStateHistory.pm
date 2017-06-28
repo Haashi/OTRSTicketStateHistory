@@ -84,6 +84,7 @@ sub GetTicketStateHistoryText {
     }
     
     $DBObject->Disconnect();
+    
     #Builds the text output
     my $Text="";
     foreach (keys %Time) {
