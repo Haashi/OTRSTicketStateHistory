@@ -129,6 +129,10 @@ sub Run {
             Title => $Ticket{Title},
         },
     );
+    
+    $Output .= $LayoutObject->Output(
+        TemplateFile => 'AgentTicketStateHistory1',
+    );
 
     foreach (reverse split(/\n/,$Data{TicketStateHistoryText})) {
       $Data{TicketStateHistoryLine}=$_;
