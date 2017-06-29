@@ -13,7 +13,7 @@
           <Item Key="Action">AgentTicketStateHistory</Item>
           <Item Key="Link">Action=AgentTicketStateHistory;TicketID=$QData{"TicketID"}</Item>
           <Item Key="Target"/>
-          <Item Key="PopupType"/>TicketStateHistory</Item>
+          <Item Key="PopupType">TicketStateHistory</Item>
         </Hash>
       </Setting>
     </ConfigItem>
@@ -30,7 +30,7 @@
           <Item Translatable="1" Key="Description">Show the state history of the ticket</Item>
           <Item Key="Link">Action=AgentTicketStateHistory;TicketID=$QData{"TicketID"}</Item>
           <Item Key="Target"/>
-          <Item Key="PopupType"/>TicketStateHistory</Item>
+          <Item Key="PopupType">TicketStateHistory</Item>
         </Hash>
       </Setting>
     </ConfigItem>
