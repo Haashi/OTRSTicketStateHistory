@@ -2,14 +2,14 @@
 
 <otrs_config init="Application" version="1.0">
   <ConfigItem Valid="1" Required="0" Name="Ticket::Frontend::MenuModule###960-TicketStateHistory">
-      <Description Translatable="0">Shows a link in the menu to show the state history of a ticket in the ticket zoom view of the agent interface.</Description>
+      <Description Translatable="1">Shows a link in the menu to show the state history of a ticket in the ticket zoom view of the agent interface.</Description>
       <Group>TicketStateHistory</Group>
       <SubGroup>Frontend::Agent::Ticket::MenuModule</SubGroup>
       <Setting>
         <Hash>
           <Item Key="Module">Kernel::Output::HTML::TicketMenuGeneric</Item>
           <Item Key="Name">TicketStateHistory</Item>
-          <Item Translatable="0" Key="Description">Show the state history of the ticket.</Item>
+          <Item Translatable="1" Key="Description">Show the state history of the ticket</Item>
           <Item Key="Action">AgentTicketStateHistory</Item>
           <Item Key="Link">Action=AgentTicketStateHistory;TicketID=$QData{"TicketID"}</Item>
           <Item Key="Target"/>
@@ -19,7 +19,7 @@
     </ConfigItem>
 
     <ConfigItem Valid="1" Required="0" Name="Ticket::Frontend::PreMenuModule###960-TicketStateHistory">
-      <Description Translatable="0">Shows a link in the menu to show the state history of a ticket in the ticket zoom view of the agent interface.</Description>
+      <Description Translatable="1">Shows a link in the menu to show the state history of a ticket in the ticket zoom view of the agent interface.</Description>
       <Group>TicketStateHistory</Group>
       <SubGroup>Frontend::Agent::Ticket::MenuModulePre</SubGroup>
       <Setting>
@@ -27,10 +27,10 @@
           <Item Key="Module">Kernel::Output::HTML::TicketMenuGeneric</Item>
           <Item Key="Name">TicketStateHistory</Item>
           <Item Key="Action">AgentTicketStateHistory</Item>
-          <Item Translatable="0" Key="Description">Show the state history of the ticket.</Item>
+          <Item Translatable="1" Key="Description">Show the state history of the ticket</Item>
           <Item Key="Link">Action=AgentTicketStateHistory;TicketID=$QData{"TicketID"}</Item>
           <Item Key="Target"/>
-          <Item Key="PopupType"/>
+          <Item Key="PopupType"/>TicketStateHistory</Item>
         </Hash>
       </Setting>
     </ConfigItem>
@@ -40,8 +40,8 @@
           <SubGroup>Frontend::Agent::ModuleRegistration</SubGroup>
           <Setting>
               <FrontendModuleReg>
-                  <Description Translatable="1">Ticket State History.</Description>
-                  <Title Translatable="1">State History</Title>
+                  <Description>Ticket State History.</Description>
+                  <Title>State History</Title>
                   <NavBarName>Ticket</NavBarName>
               </FrontendModuleReg>
           </Setting>
