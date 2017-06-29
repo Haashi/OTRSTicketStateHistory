@@ -11,10 +11,10 @@ sub Data {
         = 'Temps total passé dans chaque état :';
 
     $Self->{Translation}->{'Shows a link in the menu to show the state history of a ticket in the ticket zoom view of the agent interface.'}
-        = 'Affiche une option dans le menu agent pour voir l'historique des états du ticket, ainsi que le temps total passé dans chaque état.';
+        = 'Affiche une option dans le menu agent pour voir l\'historique des états du ticket, ainsi que le temps total passé dans chaque état.';
     
     $Self->{Translation}->{'Show the state history of the ticket'}
-        = 'Affiche l'historique des états du ticket';
+        = 'Affiche l\'historique des états du ticket';
         
     
     return 1;
