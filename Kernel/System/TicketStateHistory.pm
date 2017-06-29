@@ -106,25 +106,25 @@ sub GetTicketStateHistoryText {
     my $Text="";
     foreach (keys %Time) {
       if( $Time{$_}<60){
-        $Text="The ticket stayed in the $_ state for $Time{$_} sec.\n".$Text;
+        $Text="$_ : $Time{$_} sec.\n".$Text;
       }
       elsif( $Time{$_}<3600){
         $minute=int( $Time{$_}/60);
         $second= $Time{$_}%60;
-        $Text="The ticket stayed in the $_ state for $minute min and $second sec.\n".$Text;
+        $Text="$_ : $minute min, $second sec \n".$Text;
       }
       elsif( $Time{$_}<3600*24){
         $hour=int( $Time{$_}/3600);
         $minute=int(( $Time{$_}-$hour*3600)/60);
         $second= $Time{$_}-3600*$hour-$minute*60;
-        $Text= "The ticket stayed in the $_ state for $hour h, $minute min and $second sec \n".$Text;
+        $Text= "$_ : $hour h, $minute min, $second sec \n".$Text;
       }
       else{
         $day=int( $Time{$_}/(3600*24));
         $hour=int(( $Time{$_}-$day*3600*24)/3600);
         $minute=int(( $Time{$_}-$day*3600*24-3600*$hour)/60);
         $second=( $Time{$_}-$day*3600*24-3600*$hour)-$minute*60;
-        $Text= "The ticket stayed in the $_ state for $day d, $hour h, $minute min and $second sec \n".$Text;
+        $Text= "$_ : $day d, $hour h, $minute min, $second sec \n".$Text;
       }
     }
 
