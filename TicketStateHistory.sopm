@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <otrs_package version="1.0">
     <Name>TicketStateHistory</Name>
-    <Version>0.1</Version>
+    <Version>0.2</Version>
     <Framework>3.2.x</Framework>
     <Vendor>fcnet</Vendor>
     <URL>http://www.fcnet.fr/</URL>
@@ -15,6 +15,8 @@
         <File Permission="644" Location="Kernel/System/TicketStateHistory.pm"></File>
         <File Permission="644" Location="Kernel/Modules/AgentTicketStateHistory.pm"></File>
         <File Permission="644" Location="Kernel/Output/HTML/Templates/AgentTicketStateHistory.dtl"></File>
+        <File Permission="644" Location="Kernel/Output/HTML/Templates/AgentTicketStateHistory1.dtl"></File>
         <File Permission="644" Location="Kernel/Output/HTML/Templates/AgentTicketStateHistory2.dtl"></File>
+        <File Permission="644" Location="Kernel/Language/fr_TicketStateHistory.pm"></File>
     </Filelist>
 </otrs_package>
