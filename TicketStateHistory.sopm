@@ -2,7 +2,7 @@
 <otrs_package version="1.0">
     <Name>TicketStateHistory</Name>
     <Version>0.2</Version>
-    <Framework>3.2.x</Framework>
+    <Framework>3.3.x</Framework>
     <Vendor>fcnet</Vendor>
     <URL>http://www.fcnet.fr/</URL>
     <License>GNU AFFERO GENERAL PUBLIC LICENSE Version 3, November 2007</License>
