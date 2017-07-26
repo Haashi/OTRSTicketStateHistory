@@ -7,6 +7,7 @@ use Kernel::System::Encode;
 use Kernel::System::Log;
 use Kernel::System::Main;
 use Kernel::System::DB;
+use Kernel::Language;
 
 use strict;
 use warnings;
@@ -44,6 +45,13 @@ sub GetTicketStateHistoryText {
         LogObject    => $LogObject,
         MainObject   => $MainObject,
     );
+    my $LanguageObject = Kernel::Language->new(
+        MainObject   => $MainObject,
+        ConfigObject => $ConfigObject,
+        EncodeObject => $EncodeObject,
+        LogObject    => $LogObject,
+    );
+
 
     $DBObject->Connect();
 
@@ -61,8 +69,9 @@ sub GetTicketStateHistoryText {
            Coalesce((SELECT th2.create_time
                      FROM   ticket_history th2
                      WHERE  th2.history_type_id IN ( '1', '27' )
-                            AND th2.ticket_id = th.ticket_id
+                            AND th2.ticket_id = th.ticket_id and ticket_id=".$ticketid."
                             AND th2.id > th.id
+order by th2.id
                      LIMIT  1), Now())
            custom_date,
            Timestampdiff(second, th.create_time, Coalesce(
@@ -72,7 +81,9 @@ sub GetTicketStateHistoryText {
                    '1', '27' )
                    AND th2.ticket_id =
                        th.ticket_id
+and ticket_id=".$ticketid."
                    AND th2.id > th.id
+order by th2.id
             LIMIT  1), Now())) diff
     FROM   `ticket_history` th
            LEFT JOIN users u
@@ -83,7 +94,7 @@ sub GetTicketStateHistoryText {
     ORDER  BY custom_date desc;";
 
     $DBObject->Prepare(SQL   => $requete,);
-    
+
     #accounts the total time spent in each unique state
     my %Time=();
     my $day;
@@ -92,6 +103,7 @@ sub GetTicketStateHistoryText {
     my $second;
     while(my @row=$DBObject->FetchrowArray()){
       my ($agent,$state,$notused,$startdate,$id,$enddate,$diff)=@row;
+      $state= $LanguageObject->Get($state);
       if(defined $Time{$state}){
         $Time{$state}+=$diff;
       }
@@ -99,9 +111,9 @@ sub GetTicketStateHistoryText {
         $Time{$state}=$diff;
       }
     }
-    
+
     $DBObject->Disconnect();
-    
+
     #Builds the text output
     my $Text="";
     foreach (keys %Time) {
