@@ -141,11 +141,58 @@ sub Run {
 
     $Data{TicketStateHistoryText} = $Self->{TicketStateHistoryObject}->GetTicketStateHistoryText($Self->{TicketID});
 
+    my @states;
+    my @times;
+    my @all_nums;
+    my $total;
+    foreach (split(/\n/,$Data{TicketStateHistoryText})) {
+      my ($state,$time)=split(/ : /,$_);
+      @all_nums    = $time =~ /(\d+)/g;
+      @all_nums = reverse @all_nums;
+      @all_nums[3]=@all_nums[3]*3600*24;
+      @all_nums[2]=@all_nums[2]*3600;
+      @all_nums[1]=@all_nums[1]*60;
+      @all_nums[0]=@all_nums[0];
+      $total=$total+ eval join '+', @all_nums;
+    }
+
+    foreach (split(/\n/,$Data{TicketStateHistoryText})) {
+      my ($state,$time)=split(/ : /,$_);
+      push @states, $state;
+      @all_nums    = $time =~ /(\d+)/g;
+      @all_nums = reverse @all_nums;
+      @all_nums[3]=@all_nums[3]*3600*24;
+      @all_nums[2]=@all_nums[2]*3600;
+      @all_nums[1]=@all_nums[1]*60;
+      @all_nums[0]=@all_nums[0];
+      my $sum = eval join '+', @all_nums;
+      push @times, $sum;
+      my %Data1= ("State"=>$state , "Time"=>$time, "Percent"=>sprintf("%.2f", $sum*100/$total)."%");
+      $Self->{LayoutObject}->Block(
+          Name => 'Row1',
+          Data => {%Data1},
+          );
+    }
+
     # build page
     my $Output = $Self->{LayoutObject}->Header(
         Value => $Tn,
         Type  => 'Small',
     );
+
+    $Output .= $Self->{LayoutObject}->Output(
+        TemplateFile => 'AgentTicketStateHistory1',
+    );
+
+
+    my $TimeData="[".join(",",@times)."]";
+    my $StateData="[\"".join("\",\"",@states)."\"]";
+    %Data=("Time"=>$TimeData,"State"=>$StateData);
+    $Output .= $Self->{LayoutObject}->Output(
+        TemplateFile => 'AgentTicketStateHistory2',
+        Data=>\%Data,
+    );
+
     $Output .= $Self->{LayoutObject}->Output(
         TemplateFile => 'AgentTicketStateHistory',
         Data         => {
@@ -154,18 +201,6 @@ sub Run {
             Title        => $Ticket{Title},
         },
     );
-    $Output .= $Self->{LayoutObject}->Output(
-        TemplateFile => 'AgentTicketStateHistory1',
-    );
-
-    foreach (reverse split(/\n/,$Data{TicketStateHistoryText})) {
-      $Data{TicketStateHistoryLine}=$_;
-      $Output.= $Self->{LayoutObject}->Output(
-        Data=> \%Data,
-        TemplateFile => 'AgentTicketStateHistory2',
-      );
-    }
-
 
     $Output .= $Self->{LayoutObject}->Footer(
     );
