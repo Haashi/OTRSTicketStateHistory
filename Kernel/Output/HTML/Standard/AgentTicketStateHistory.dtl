@@ -30,7 +30,7 @@
                     <thead>
                         <tr>
                             <th>$Text{"Comment"}</th>
-                            <th>$Text{"Zoom"}</th>
+                            <th>$Text{"Test"}</th>
                             <th>$Text{"User"}</th>
                             <th>$Text{"Createtime"}</th>
                         </tr>
