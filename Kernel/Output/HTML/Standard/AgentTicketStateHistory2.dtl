@@ -1,3 +1,73 @@
-<p>
-    $QData{"TicketStateHistoryLine"}
-</p>
+<div class="Content">
+    <div class="WidgetSimple">
+        <div class="Header">
+            <h2>
+                $Text{"Summary"}
+            </h2>
+        </div>
+        <div class="Content">
+            <table class="DataTable">
+                <thead>
+                    <tr>
+                        <th>$Text{"State"}</th>
+                        <th>$Text{"Time"}</th>
+                        <th>$Text{"Percent"}</th>
+                    </tr>
+                </thead>
+                <tbody>
+
+<!-- dtl:block:Row1 -->
+                    <tr>
+                        <td>
+                            $QData{"State"}
+                        </td>
+                        <td>
+                            $QData{"Time"}
+                        </td>
+                        <td>
+                            $QData{"Percent"}
+                        </td>
+                    </tr>
+<!-- dtl:block:Row1 -->
+
+                </tbody>
+            </table>
+        </div>
+        <canvas id="canvas" width="450" height="350"></canvas>
+        <script type="text/javascript">
+        var canvas = document.getElementById("canvas");
+        var ctx = canvas.getContext("2d");
+        ctx.save();
+        var data = $Data{"Time"};
+        var labels= $Data{"State"};
+        var colors = ["#cc0000", "#993399", "#ffcc00", "#33cc33", "#0033cc", "#996600","#669999","#00ffff","#ff99cc","#ff6600"]
+        var center = [450 / 2, 350 / 2];
+        var radius = Math.min(400, 300) / 2;
+        var lastPosition = 0, total = 0;
+        for(var i in data) { total += data[i]; }
+        for (var i = 0; i < data.length; i++) {
+                ctx.fillStyle = colors[i];
+                ctx.beginPath();
+                ctx.moveTo(center[0],center[1]);
+                ctx.arc(center[0],center[1],radius,lastPosition,lastPosition+(Math.PI*2*(data[i]/total)),false);
+                ctx.lineTo(center[0],center[1]);
+                ctx.fill();
+                ctx.fillStyle="#000000"
+                lastPosition += Math.PI*2*(data[i]/total)/2;
+                //if(data[i]/total>0.10){
+                //  ctx.fillText(labels[i],center[0]+radius*Math.cos(lastPosition),center[1]+radius*Math.sin(lastPosition));
+                //}
+                lastPosition += Math.PI*2*(data[i]/total)/2;
+        }
+        var lastPosition = 0;
+        ctx.fillStyle="#000000"
+        for (var i = 0; i < data.length; i++){
+                lastPosition += Math.PI*2*(data[i]/total)/2;
+                if(data[i]/total>0.02){
+                    ctx.fillText(labels[i],center[0]+radius*Math.cos(lastPosition),center[1]+radius*Math.sin(lastPosition));
+                }
+                lastPosition += Math.PI*2*(data[i]/total)/2;
+        }
+        </script>
+    </div>
+</div>
